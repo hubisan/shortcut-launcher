@@ -6,8 +6,8 @@ TODO Add GIF here
 
 The following shortcuts are included:
 
-- shortcuts (\*.lnk) stored your folder and its subfolders
-- web page links (\*.url) stored your folder and its subfolders
+- shortcuts (\*.lnk) stored in your folder and its subfolders
+- web page links (\*.url) stored in your folder and its subfolders
 - the recent files/folders automatically stored in `%AppData%\Microsoft\Windows\Recent\`
 
 To specify your **folder** to look in add a shortcut to that folder on your desktop and name it `shortcut-launcher`:
@@ -84,9 +84,12 @@ I use a compiled version
 
 ## TODO
 
+- [ ] Display error message if folder doesn't exist
 - [ ] TODO Change subroutines into functions and clean the script.
 - [ ] TODO Maybe refactor all variables to start with `MY`?  
   Most examples do this and there is probably a reason to do so.
+- [ ] TODO Add gif animation
+- [ ] TODO Add shortcut png with white background (at work)
   
 ## Changelog
 
