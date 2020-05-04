@@ -1,4 +1,4 @@
-# Shortcut-Launcher
+# ShortcutLauncher
 
 An [AutoHotkey](https://www.autohotkey.com/) script for Microsoft Windows to show a GUI that lets you incremental search and open shortcuts.
 
@@ -10,7 +10,7 @@ The following shortcuts are included:
 - web page links (\*.url) stored in your folder and its subfolders
 - the recent files/folders automatically stored in `%AppData%\Microsoft\Windows\Recent\`
 
-To specify your **folder** to look in add a shortcut to that folder on your desktop and name it `shortcut-launcher`:
+To specify your **folder** to look in add a shortcut to that folder on your desktop and name it `ShortcutLauncher`:
 
 ![shortcut launcher on the desktop](img/desktop-shortcut.png)
 
@@ -101,13 +101,20 @@ To get a compiled script (.exe) just use the compiler provided by ahk. Press the
 
 ## TODO
 
-- [ ] Display error message if folder doesn't exist
+- [X] Display error message if folder doesn't exist
 - [ ] TODO Change subroutines into functions and clean the script.
 - [ ] TODO Maybe refactor all variables to start with `MY`?  
   Most examples do this and there is probably a reason to do so.
 - [ ] TODO Add gif animation
 - [ ] TODO Add shortcut png with white background (at work)
 - [ ] Add a gist with an always up to date recentBlacklist.txt
+- [ ] If target is an .exe make it reuse it if already active by default. And use C-S-m and S-RET to force make new.
+  ``` text
+  IfWinExist ahk_exe chrome.exe
+    winactivate ahk_exe chrome.exe
+  else
+  ```
+- [ ] Handle apps like ubuntu same as .exe
   
 ## Changelog
 

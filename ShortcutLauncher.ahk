@@ -1,7 +1,7 @@
 ; Copyright 2020, Daniel Hubmann
 
 ; Author: Daniel Hubmann <hubisan@gmail.com>
-; URL: https://github.com/hubisan/shortcut-launcher
+; URL: https://github.com/hubisan/ShortcutLauncher
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -20,10 +20,14 @@
 ; Beginners OOP with AHK
 ; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=41332
 
+; and this to work with gui
+; [Example] Encapsulating Gui Controls within a class
+; https://www.autohotkey.com/boards/viewtopic.php?f=6&t=5758
+
 #NoEnv
 #SingleInstance force
 #NoTrayIcon
-SetTitleMatchMode, 3
+; SetTitleMatchMode, 3
 
 ; Global variables
 Shortcuts := []
@@ -66,7 +70,7 @@ Return
 
 PushShortcutsFromFolder:
     ; Get the folder from the shortcut on your desktop
-    ShortcutToFolder := A_Desktop . "\shortcut-launcher.lnk"
+    ShortcutToFolder := A_Desktop . "\ShortcutLauncher.lnk"
     FileGetShortcut, %ShortcutToFolder%, ShortcutFolder
     
     If (InStr(FileExist(ShortcutFolder), "D")) 
@@ -304,7 +308,8 @@ Enter::
         }
         Else
         {
-            Gui, ShortcutLauncher:Minimize
+            ; Dont do this, this deactivates the windows opened with run
+            ; Gui, ShortcutLauncher:Minimize
         }
         Return
     }
