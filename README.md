@@ -19,6 +19,7 @@ To specify your **folder** to look in add a shortcut to that folder on your desk
 - [Incremental search](#incremental-search)
 - [Text used for entries](#text-used-for-entries)
 - [Key bindings](#key-bindings)
+- [Blacklist](#blacklist)
 - [Compiled version](#compiled-version)
 - [TODO](#todo)
 - [Changelog](#changelog)
@@ -77,10 +78,26 @@ For convenience there are multiple bindings per command:
 
 <kbd>Ctrl-h</kbd> seems to work by default as Backspace in the edit box.
 
+## Blacklist
+
+You can blacklist shortcuts by placing any of the following text file in the shortcuts folder:
+
+- shortcutsBlacklist.txt - used to filter shortcuts in your folder
+- recentBlacklist.txt - used to filter recent shortcuts
+
+Each line in those file is a [regular expression](https://www.autohotkey.com/docs/misc/RegEx-QuickRef.htm) (case sensitive) which is compared to the file name and the target. If it matches the shortcut ist excluded. This is especially useful for the recent files/folders as there happens to be strange stuff in that folder.
+
+Example for `recentBlacklist.txt`:
+
+``` text
+ms-screensketchedit&source=Toast&isTemporary=true&sharedAccessToken
+customDestinations-ms
+```
+
+
 ## Compiled version
 
-To get a compiled script (.exe) just use the compiler provided by ahk. Press the win key and then search for convert .ahk to .exe
-I use a compiled version 
+To get a compiled script (.exe) just use the compiler provided by ahk. Press the win key and then search for convert .ahk to .exe.
 
 ## TODO
 
@@ -90,6 +107,7 @@ I use a compiled version
   Most examples do this and there is probably a reason to do so.
 - [ ] TODO Add gif animation
 - [ ] TODO Add shortcut png with white background (at work)
+- [ ] Add a gist with an always up to date recentBlacklist.txt
   
 ## Changelog
 

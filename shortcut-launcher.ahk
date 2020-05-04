@@ -10,13 +10,16 @@
 
 ; This program is distributed in the hope that it will be useful,
 ; but WITHOUT ANY WARRANTY; without even the implied warranty of
-; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ; GNU General Public License for more details.
 
 ; You should have received a copy of the GNU General Public License
-; along with this program.  If not, see <http://www.gnu.org>
+; along with this program. If not, see <http://www.gnu.org>
 
-#Warn ; Comment when finished
+; Check this to make a class
+; Beginners OOP with AHK
+; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=41332
+
 #NoEnv
 #SingleInstance force
 #NoTrayIcon
@@ -53,85 +56,122 @@ GoSub, AddAll
 
 ; Adapt the listview.
 LV_Modify(1, "Select Vis") ; Select first and make sure it is in view.
-LV_ModifyCol()  ; Auto-size each column to fit its contents.
+LV_ModifyCol() ; Auto-size each column to fit its contents.
 LV_ModifyCol(3, 0) ; Hide the full filename.
 
-GuiControl, +Redraw, ShortcutsListView  ; Re-enable redrawing (it was disabled above).
+GuiControl, +Redraw, ShortcutsListView ; Re-enable redrawing (it was disabled above).
 Gui, ShortcutLauncher:Show
 
 Return
 
 PushShortcutsFromFolder:
     ; Get the folder from the shortcut on your desktop
-    ShortcutFolder := A_Desktop . "\shortcut-launcher.lnk"
-    FileGetShortcut, %ShortcutFolder%, Folder
-    FilePattern := Folder . "\*"
-
-    Loop, Files, %FilePattern%, R 
+    ShortcutToFolder := A_Desktop . "\shortcut-launcher.lnk"
+    FileGetShortcut, %ShortcutToFolder%, ShortcutFolder
+    
+    If (InStr(FileExist(ShortcutFolder), "D")) 
     {
-        If A_LoopFileExt in lnk,url
+        FilePattern := ShortcutFolder . "\*"
+        Loop, Files, %FilePattern%, R 
         {
-            ; Must save it to a writable variable for use below. Else it breaks the Loop.
-            FileName := A_LoopFileFullPath 
-            SplitPath, FileName, Name, Dir, FileExt, FilenameNoExtension 
-            If (Dir = Folder)
+            If A_LoopFileExt in lnk,url
             {
-                ; If at top dir use empty string as text.
-                Dirname := ""
-            }
-            Else
-            {
-                ; Replace path separator.
-                Dirname := StrReplace(Dir, Folder . "\", "")
-                Dirname := StrReplace(Dirname, "\", " > ")
-            }
-
-            FileGetShortcut, %FileName%, OutTarget, OutDir, OutArgs
-            If (FileExt = "url")
-            {
-                ; If it is an url it actually is a text file with the URL on a line
-                ; on its own starting with URL=. Read the file and extract the url.
-                Loop, read, %Filename%
+                ; Must save it to a writable variable for use below. Else it breaks the Loop.
+                FileName := A_LoopFileFullPath 
+                SplitPath, FileName, Name, Dir, FileExt, FilenameNoExtension 
+                If (Dir = ShortcutFolder)
                 {
-                    If (SubStr(A_LoopReadLine, 1, 4) = "URL=")
+                    ; If at top dir use empty string as text.
+                    Dirname := ""
+                }
+                Else
+                {
+                    ; Replace path separator.
+                    Dirname := StrReplace(Dir, ShortcutFolder . "\", "")
+                    Dirname := StrReplace(Dirname, "\", " > ")
+                }
+                
+                FileGetShortcut, %FileName%, OutTarget, OutDir, OutArgs
+                If (FileExt = "url")
+                {
+                    ; If it is an url it actually is a text file with the URL on a line
+                    ; on its own starting with URL=. Read the file and extract the url.
+                    Loop, read, %Filename%
                     {
-                        OutTarget := SubStr(A_LoopReadLine, 5)
-                        ; Only Edge can make direct links unlike other browsers, damn you MS.
-                        OutTarget := StrReplace(OutTarget, "microsoft-edge:", "(edge) ")
-                        break
+                        If (SubStr(A_LoopReadLine, 1, 4) = "URL=")
+                        {
+                            OutTarget := SubStr(A_LoopReadLine, 5)
+                            ; Only Edge can make direct links unlike other browsers, damn you MS.
+                            OutTarget := StrReplace(OutTarget, "microsoft-edge:", "(edge) ")
+                            break
+                        }
                     }
                 }
+                
+                ; For shortcuts using 
+                If (RegExMatch(OutTarget . OutArgs, "(chrome|firefox|iexplore)\.exe.*(https.?://.*)$", Match) <> 0)
+                {
+                    RegExMatch(OutArgs, "") 
+                    OutTarget := "(" . Match1 . ") " . Match2
+                }
+                
+                Shortcuts.Push({dir:Dirname, file:FilenameNoExtension, target:OutTarget, filename:Filename})
             }
-    
-            ; For shortcuts using 
-            If (RegExMatch(OutTarget . OutArgs, "(chrome|firefox|iexplore)\.exe.*(https.?://.*)$", Match) <> 0)
-            {
-                RegExMatch(OutArgs, "") 
-                OutTarget := "(" . Match1 . ") " . Match2
-            }
-    
-            Shortcuts.Push({dir:Dirname, file:FilenameNoExtension, target:OutTarget, filename:Filename})
         }
+    } 
+    Else 
+    {
+        MsgBox % "Shortcut on desktop missing or folder not existing.`n`nSkipping."
     }
 Return
 
 PushShortcutsFromRecent:
-    Loop, Files, %A_AppData%\Microsoft\Windows\Recent\*.lnk
+    RecentFolder := A_AppData . "\Microsoft\Windows\Recent"
+    If (InStr(FileExist(RecentFolder), "D")) 
     {
-        FileName := A_LoopFileFullPath 
-        FileGetShortcut, %FileName%, OutTarget
-        Shortcuts.Push({dir:"Recent", file:"", target:OutTarget, filename:Filename})
+        ; Stuff in recent to not consider, will be more over time.
+        ; Add recentBlacklist.txt and recentwhitelist.txt to link folder maybe.
+        RecentFilterRegexps := []
+        RecentBlacklistFile := ShortcutFolder . "\recentBlacklist.txt"
+        Loop, read, %RecentBlacklistFile%
+        { 
+            RecentFilterRegexps.Push(A_LoopReadLine)
+        }
+
+        Loop, Files, %A_AppData%\Microsoft\Windows\Recent\*.lnk
+        {
+
+            Filename := A_LoopFileFullPath 
+            ; Use a function.
+            Filter := False
+            for index, value in RecentFilterRegexps
+            {
+                If (RegExMatch(Filename, value)) {
+                    Filter := True   
+                break
+               }
+
+            }
+            If (!Filter) {
+                FileGetShortcut, %Filename%, OutTarget
+                Shortcuts.Push({dir:"Recent", file:"", target:OutTarget, filename:Filename})
+            }
+        }
+    } 
+    Else 
+    {
+        MsgBox % "Folder with recent files/folders not found. Skipping."
     }
 Return
 
 AddEntry:
     If (value.dir = "") 
     {
-    LV_Add("", value.file, value.target, value.filename)
+        LV_Add("", value.file, value.target, value.filename)
     }
     Else
     {
-    LV_Add("", value.dir . " > " . value.file, value.target, value.filename)
+        LV_Add("", value.dir . " > " . value.file, value.target, value.filename)
     }
 Return
 
@@ -147,12 +187,12 @@ Return
 
 IncrementalSearch:
     Gui, ShortcutLauncher:Default
-	Gui, ShortcutLauncher:Submit, NoHide
+    Gui, ShortcutLauncher:Submit, NoHide
     If (SearchString != LastSearchString) 
     {
         LastSearchString := SearchString
         ; Improve performance by disabling redrawing during load.
-        GuiControl, -Redraw, ShortcutsListView  
+        GuiControl, -Redraw, ShortcutsListView 
         ; Clear the list view.
         LV_Delete()
         ; Loop through the array and add matching rows to the list view.
@@ -162,9 +202,9 @@ IncrementalSearch:
             If (SearchString != "") 
             {
                 ; Create regular expression from search string:
-                ;   1. Replace spaces with .* to match any char 0 or more times.
+                ; 1. Replace spaces with .* to match any char 0 or more times.
                 Regexp := StrReplace(SearchString, " ", ".*")
-                ;   2. Make it case insensitive if it contains only lowercase letters. 
+                ; 2. Make it case insensitive if it contains only lowercase letters. 
                 If (! RegExMatch(Regexp, "[A-Z]"))
                 {
                     Regexp := "i)" . Regexp
@@ -214,8 +254,8 @@ Scroll(num)
 ; Global binding to show the GUI.
 ; ^!+l::
 ; {
-;     Gui, ShortcutLauncher:Show, Restore 
-;     Return
+; Gui, ShortcutLauncher:Show, Restore 
+; Return
 ; }
 
 ; Bindings while GUI is active.
@@ -224,60 +264,60 @@ Scroll(num)
 #IfWinActive, ahk_group ShortcutLauncherGroup
 Esc::
 ^g::
-{
-	Gui, ShortcutLauncher:Show, Minimize
-    Return
-}
+    {
+        Gui, ShortcutLauncher:Minimize
+        Return
+    }
 Up::
 ^p::
 ^k::
-{
-    Scroll(-1)
-    Return
-}
+    {
+        Scroll(-1)
+        Return
+    }
 Down::
 ^n::
 ^j::
-{
-    Scroll(1)
-    Return
-}
+    {
+        Scroll(1)
+        Return
+    }
 ^b::
-{
-    Scroll(-20)
-    Return
-}
+    {
+        Scroll(-20)
+        Return
+    }
 ^f::
-{
-    Scroll(20)
-    Return
-}
+    {
+        Scroll(20)
+        Return
+    }
 ^m::
 Enter::
-{
-    Gui, ShortcutLauncher:Default
-    LV_GetText(ShortcutTarget, LV_GetNext(), 3)
-    Run %ShortcutTarget%,, UseErrorLevel
-    if ErrorLevel
     {
-        MsgBox Could not open "%FileDir%\%FileName%".
+        Gui, ShortcutLauncher:Default
+        LV_GetText(ShortcutTarget, LV_GetNext(), 3)
+        Run %ShortcutTarget%,, UseErrorLevel
+        if ErrorLevel
+        {
+            MsgBox % Format("Could not open {:s}", ShortcutTarget)
+        }
+        Else
+        {
+            Gui, ShortcutLauncher:Minimize
+        }
+        Return
     }
-    Else
-    {
-        Gui, ShortcutLauncher:Show, Minimize
-    }
-    Return
-}
 ^r::
-{
-    GoSub, ToggleRecent
-    Return
-}
+    {
+        GoSub, ToggleRecent
+        Return
+    }
 ^x::
-{
-    GoSub, GuiClose
-    Return
-}
-
-GuiClose:  ; When the window is closed, exit the script automatically:
+    {
+        GoSub, GuiClose
+        Return
+    }
+    
+    GuiClose: ; When the window is closed, exit the script automatically:
     ExitApp
