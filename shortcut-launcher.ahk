@@ -16,6 +16,10 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org>
 
+; Changelog
+; - 2020-06-24: Added +LV0x10000 to the list view to avoid flickering
+;   https://autohotkey.com/board/topic/89323-listview-and-flashing-on-redrawing-or-editing/
+
 #Warn ; Comment when finished
 #NoEnv
 #SingleInstance force
@@ -39,7 +43,7 @@ Gui, ShortcutLauncher:Margin, 15, 15
 ; Add an edit box for the insert the search string.
 Gui, ShortcutLauncher:Add, Edit, w1200 h30 +0x200 -VScroll -wrap -E0x200 vSearchString gIncrementalSearch, 
 ; Create the ListView.
-Gui, ShortcutLauncher:Add, ListView, r40 w1200 -Multi -Hdr -E0x200 Background091D33 cB6C9DE vShortcutsListView, Name|Target|Filename
+Gui, ShortcutLauncher:Add, ListView, +LV0x10000 r40 w1200 -Multi -Hdr -E0x200 Background091D33 cB6C9DE vShortcutsListView, Name|Target|Filename
 
 ; Improve performance by disabling redrawing during load.
 GuiControl, -Redraw, ShortcutsListView

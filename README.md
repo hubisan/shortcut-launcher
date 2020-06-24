@@ -6,8 +6,8 @@ TODO Add GIF here
 
 The following shortcuts are included:
 
-- shortcuts (\*.lnk) stored your folder and its subfolders
-- web page links (\*.url) stored your folder and its subfolders
+- shortcuts (\*.lnk) stored in your folder and its subfolders
+- web page links (\*.url) stored in your folder and its subfolders
 - the recent files/folders automatically stored in `%AppData%\Microsoft\Windows\Recent\`
 
 To specify your **folder** to look in add a shortcut to that folder on your desktop and name it `shortcut-launcher`:
@@ -79,17 +79,22 @@ For convenience there are multiple bindings per command:
 
 ## Compiled version
 
-To get a compiled script (.exe) just use the compiler provided by ahk. Press the win key and then search for convert .ahk to .exe
-I use a compiled version 
+To get a compiled script (.exe) just use the compiler provided by ahk. Press
+the win key and then search for convert .ahk to .exe
 
 ## TODO
 
-- [ ] TODO Change subroutines into functions and clean the script.
-- [ ] TODO Maybe refactor all variables to start with `MY`?  
-  Most examples do this and there is probably a reason to do so.
-  
+- [ ] TODO Change subroutines into functions and clean the script. Or rather
+      use a class to create a namespace.
+- [ ] TODO Add a compiled version.
+- [ ] Add prefixes like U for url, P for path/folder, F for file or at least URL
+- [ ] Extract the profile if one is used for an url. Example:
+      `%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe --profile-directory="Default" https://www.tenforums.com`
+
 ## Changelog
 
 ### No stable release yet
 
-- No stable release yet.
+- 2020-06-24 Stop flickering on updating the list view  
+  Added +LV0x10000 to the list view to avoid flickering when the list view is updated.  
+  https://autohotkey.com/board/topic/89323-listview-and-flashing-on-redrawing-or-editing/
