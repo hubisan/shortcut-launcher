@@ -63,13 +63,12 @@ For convenience there are multiple bindings per command:
 | <kbd>Ctrl-m</kbd> | open the currently selected shortcut |
 | <kbd>Enter</kbd>  | open the currently selected shortcut |
 | <kbd>Ctrl-n</kbd> | select next entry                    |
-| <kbd>Ctrl-j</kbd> | select next entry                    |
 | <kbd>Down</kbd>   | select next entry                    |
 | <kbd>Ctrl-p</kbd> | select previous entry                |
-| <kbd>Ctrl-k</kbd> | select previous entry                |
 | <kbd>Up</kbd>     | select previous entry                |
 | <kbd>Ctrl-f</kbd> | scroll down 20 entries               |
 | <kbd>Ctrl-b</kbd> | scroll up 20 entries                 |
+| <kbd>Ctrl-k</kbd> | clear the input field                |
 | <kbd>Ctrl-r</kbd> | toggle showing recent files/folders  |
 | <kbd>Ctrl-g</kbd> | minimize                             |
 | <kbd>Esc</kbd>    | minimize                             |
@@ -79,14 +78,14 @@ For convenience there are multiple bindings per command:
 
 ## Compiled version
 
-To get a compiled script (.exe) just use the compiler provided by ahk. Press
-the win key and then search for convert .ahk to .exe
+The compiled script (.exe, 64-bit) is included in this repository. You can compile it
+yourself: Use the compiler provided by ahk. Press the win key and then search
+for convert .ahk to .exe
 
 ## TODO
 
-- [ ] TODO Change subroutines into functions and clean the script. Or rather
-      use a class to create a namespace.
-- [ ] TODO Add a compiled version.
+- [ ] Change subroutines into functions and clean the script. Or rather use a
+      class to create a namespace. See the hydra code.
 - [ ] Add prefixes like U for url, P for path/folder, F for file or at least URL
 - [ ] Extract the profile if one is used for an url. Example:
       `%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe --profile-directory="Default" https://www.tenforums.com`

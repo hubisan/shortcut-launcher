@@ -43,7 +43,7 @@ Gui, ShortcutLauncher:Margin, 15, 15
 ; Add an edit box for the insert the search string.
 Gui, ShortcutLauncher:Add, Edit, w1200 h30 +0x200 -VScroll -wrap -E0x200 vSearchString gIncrementalSearch, 
 ; Create the ListView.
-Gui, ShortcutLauncher:Add, ListView, +LV0x10000 r40 w1200 -Multi -Hdr -E0x200 Background091D33 cB6C9DE vShortcutsListView, Name|Target|Filename
+Gui, ShortcutLauncher:Add, ListView, +LV0x10000 r35 w1200 -Multi -Hdr -E0x200 Background091D33 cB6C9DE vShortcutsListView, Name|Target|Filename
 
 ; Improve performance by disabling redrawing during load.
 GuiControl, -Redraw, ShortcutsListView
@@ -59,6 +59,7 @@ GoSub, AddAll
 LV_Modify(1, "Select Vis") ; Select first and make sure it is in view.
 LV_ModifyCol()  ; Auto-size each column to fit its contents.
 LV_ModifyCol(3, 0) ; Hide the full filename.
+LV_ModifyCol(1, 600) ; Set width of first column.
 
 GuiControl, +Redraw, ShortcutsListView  ; Re-enable redrawing (it was disabled above).
 Gui, ShortcutLauncher:Show
@@ -120,11 +121,28 @@ PushShortcutsFromFolder:
 Return
 
 PushShortcutsFromRecent:
+    RecentFiles := []
     Loop, Files, %A_AppData%\Microsoft\Windows\Recent\*.lnk
     {
         FileName := A_LoopFileFullPath 
         FileGetShortcut, %FileName%, OutTarget
-        Shortcuts.Push({dir:"Recent", file:"", target:OutTarget, filename:Filename})
+
+        ; Check if duplicates.
+        IsDuplicate := False
+        for index, value in RecentFiles
+        {
+            If (OutTarget == value) {
+                IsDuplicate := True   
+            break
+            }
+
+        }
+
+        If (!IsDuplicate) {
+            RecentFiles.Push(OutTarget)
+            SplitPath, OutTarget, Fname
+            Shortcuts.Push({dir:"Recent", file:Fname, target:OutTarget, filename:Filename})
+        }
     }
 Return
 
@@ -234,16 +252,22 @@ Esc::
 }
 Up::
 ^p::
-^k::
 {
     Scroll(-1)
     Return
 }
 Down::
 ^n::
-^j::
 {
     Scroll(1)
+    Return
+}
+^k::
+{
+    ; Clear the edit box 
+    Gui, ShortcutLauncher:Default
+    GuiControl, , SearchString
+    ; SendInput, ^a{Del}
     Return
 }
 ^b::
