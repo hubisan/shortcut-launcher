@@ -242,7 +242,12 @@ Scroll(num)
 
 ; Bindings while GUI is active.
 
-; #IfWinActive, Shortcut Launcher ahk_class AutoHotkeyGUI
+; Remark
+; I have remapped capslock to ctrl and then bound capslock to lwin and capslock.
+; This unfortunately makes it impossible to repeating a commend while holding
+; down capslock as ctrl. 
+; https://stackoverflow.com/questions/33732279/autohotkey-repeating-keypress-with-key-modifier-held-down
+
 #IfWinActive, ahk_group ShortcutLauncherGroup
 Esc::
 ^g::
@@ -262,12 +267,38 @@ Down::
     Scroll(1)
     Return
 }
-^k::
+^u::
 {
     ; Clear the edit box 
     Gui, ShortcutLauncher:Default
     GuiControl, , SearchString
     ; SendInput, ^a{Del}
+    Return
+}
+!a::
+{
+    SendInput, {End}+{Home}
+    Return
+}
+^a::
+{ 
+    SendInput, {Home} 
+    Return
+}
+^e::
+{
+    SendInput, {End}
+    Return
+}
+^Backspace::
+^+h::
+{
+    SendInput, ^+{Left}{Backspace}
+    Return
+}
+!d::
+{
+    SendInput, ^{Del}
     Return
 }
 ^b::

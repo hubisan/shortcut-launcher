@@ -58,21 +58,28 @@ A shortcut named `forum` (forum.lnk) filed in your folder in the subfolder `codi
 
 For convenience there are multiple bindings per command:
 
-| Key               | Description                          |
-| :---------------- | :----------------------------------- |
-| <kbd>Ctrl-m</kbd> | open the currently selected shortcut |
-| <kbd>Enter</kbd>  | open the currently selected shortcut |
-| <kbd>Ctrl-n</kbd> | select next entry                    |
-| <kbd>Down</kbd>   | select next entry                    |
-| <kbd>Ctrl-p</kbd> | select previous entry                |
-| <kbd>Up</kbd>     | select previous entry                |
-| <kbd>Ctrl-f</kbd> | scroll down 20 entries               |
-| <kbd>Ctrl-b</kbd> | scroll up 20 entries                 |
-| <kbd>Ctrl-k</kbd> | clear the input field                |
-| <kbd>Ctrl-r</kbd> | toggle showing recent files/folders  |
-| <kbd>Ctrl-g</kbd> | minimize                             |
-| <kbd>Esc</kbd>    | minimize                             |
-| <kbd>Ctrl-x</kbd> | Exit (kill the app)                  |
+| Key                       | Description                          |
+| :------------------------ | :----------------------------------- |
+| <kbd>Ctrl-m</kbd>         | open the currently selected shortcut |
+| <kbd>Enter</kbd>          | open the currently selected shortcut |
+| <kbd>Ctrl-n</kbd>         | select next entry                    |
+| <kbd>Down</kbd>           | select next entry                    |
+| <kbd>Ctrl-p</kbd>         | select previous entry                |
+| <kbd>Up</kbd>             | select previous entry                |
+| <kbd>Ctrl-f</kbd>         | scroll down 20 entries               |
+| <kbd>Ctrl-b</kbd>         | scroll up 20 entries                 |
+| <kbd>Ctrl-u</kbd>         | clear the input field                |
+| <kbd>Ctrl-r</kbd>         | toggle showing recent files/folders  |
+| <kbd>Ctrl-g</kbd>         | minimize                             |
+| <kbd>Esc</kbd>            | minimize                             |
+| <kbd>Ctrl-x</kbd>         | Exit (kill the app)                  |
+| <kbd>Alt-a</kbd>          | Select all text in input field       |
+| <kbd>Ctrl-a</kbd>         | Move to beginning of input field     |
+| <kbd>Ctrl-e</kbd>         | Move to end of input field           |
+| <kbd>Ctrl-h</kbd>         | Backspace                            |
+| <kbd>Ctrl-Backspace</kbd> | Delete last word                     |
+| <kbd>Ctrl-Shift-h</kbd>   | Delete last word                     |
+| <kbd>Alt-d</kbd>          | Delete next word                     |
 
 <kbd>Ctrl-h</kbd> seems to work by default as Backspace in the edit box.
 
