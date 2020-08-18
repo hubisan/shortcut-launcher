@@ -327,6 +327,37 @@ Enter::
     }
     Return
 }
+!o::
+{
+    ; TODO use the hydra for more actions.
+    Gui, ShortcutLauncher:Default
+    LV_GetText(ShortcutTarget, LV_GetNext(), 3)
+    LV_GetText(Filename, LV_GetNext(), 2)
+    FileGetAttrib, Attributes, % Filename
+    If (InStr(Attributes, "D"))
+    {
+        ; Already a dir, run as usual.
+        Run %ShortcutTarget%,, UseErrorLevel
+    }
+    Else
+    {
+        ; It is a file, use the dir.
+        SplitPath, Filename,, OutDir
+        Run, explore %OutDir%,, UseErrorLevel
+    }
+    If ErrorLevel
+    {
+        MsgBox Could not open "%FileDir%\%FileName%".
+    }
+    Else
+    {
+        Gui, ShortcutLauncher:Show, Minimize
+    }
+    Return
+
+    Return
+}
+
 ^r::
 {
     GoSub, ToggleRecent

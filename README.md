@@ -58,30 +58,43 @@ A shortcut named `forum` (forum.lnk) filed in your folder in the subfolder `codi
 
 For convenience there are multiple bindings per command:
 
-| Key                       | Description                          |
-| :------------------------ | :----------------------------------- |
-| <kbd>Ctrl-m</kbd>         | open the currently selected shortcut |
-| <kbd>Enter</kbd>          | open the currently selected shortcut |
-| <kbd>Ctrl-n</kbd>         | select next entry                    |
-| <kbd>Down</kbd>           | select next entry                    |
-| <kbd>Ctrl-p</kbd>         | select previous entry                |
-| <kbd>Up</kbd>             | select previous entry                |
-| <kbd>Ctrl-f</kbd>         | scroll down 20 entries               |
-| <kbd>Ctrl-b</kbd>         | scroll up 20 entries                 |
-| <kbd>Ctrl-u</kbd>         | clear the input field                |
-| <kbd>Ctrl-r</kbd>         | toggle showing recent files/folders  |
-| <kbd>Ctrl-g</kbd>         | minimize                             |
-| <kbd>Esc</kbd>            | minimize                             |
-| <kbd>Ctrl-x</kbd>         | Exit (kill the app)                  |
-| <kbd>Alt-a</kbd>          | Select all text in input field       |
-| <kbd>Ctrl-a</kbd>         | Move to beginning of input field     |
-| <kbd>Ctrl-e</kbd>         | Move to end of input field           |
-| <kbd>Ctrl-h</kbd>         | Backspace                            |
-| <kbd>Ctrl-Backspace</kbd> | Delete last word                     |
-| <kbd>Ctrl-Shift-h</kbd>   | Delete last word                     |
-| <kbd>Alt-d</kbd>          | Delete next word                     |
+Changing selected shortcut (entry):
 
-<kbd>Ctrl-h</kbd> seems to work by default as Backspace in the edit box.
+| Key                                  | Description            |
+| :----------------------------------- | :--------------------- |
+| <kbd>Ctrl-n</kbd> or <kbd>Down</kbd> | select next entry      |
+| <kbd>Ctrl-p</kbd> or <kbd>Up</kbd>   | select previous entry  |
+| <kbd>Ctrl-f</kbd>                    | scroll down 20 entries |
+| <kbd>Ctrl-b</kbd>                    | scroll up 20 entries   |
+
+Changing the search string:
+
+| Key                                                  | Description                      |
+| :--------------------------------------------------- | :------------------------------- |
+| <kbd>Ctrl-u</kbd>                                    | clear the input field            |
+| <kbd>Alt-a</kbd>                                     | Select all text in input field   |
+| <kbd>Ctrl-a</kbd>                                    | Move to beginning of input field |
+| <kbd>Ctrl-e</kbd>                                    | Move to end of input field       |
+| <kbd>Backspace</kbd> or <kbd>Ctrl-h</kbd>            | Backspace                        |
+| <kbd>Ctrl-Backspace</kbd> or <kbd>Ctrl-Shift-h</kbd> | Delete last word                 |
+| <kbd>Alt-d</kbd>                                     | Delete next word                 |
+
+Open the selected shortcut:
+
+| Key                                   | Description                                    |
+| :------------------------------------ | :--------------------------------------------- |
+| <kbd>Ctrl-m</kbd> or <kbd>Enter</kbd> | open the currently selected shortcut           |
+| <kbd>Alt-o</kbd>                      | if it is a file open the its directory instead |
+
+App:
+
+| Key                                 | Description                         |
+| :---------------------------------- | :---------------------------------- |
+| <kbd>Ctrl-r</kbd>                   | toggle showing recent files/folders |
+| <kbd>Ctrl-g</kbd> or <kbd>Esc</kbd> | minimize                            |
+| <kbd>Ctrl-x</kbd>                   | Exit (kill the app)                 |
+
+Remark: <kbd>Ctrl-h</kbd> seems to work by default as Backspace in the edit box.
 
 ## Compiled version
 
@@ -96,11 +109,13 @@ for convert .ahk to .exe
 - [ ] Add prefixes like U for url, P for path/folder, F for file or at least URL
 - [ ] Extract the profile if one is used for an url. Example:
       `%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe --profile-directory="Default" https://www.tenforums.com`
+- [ ] Add hotkey to focus edit box.
 
 ## Changelog
 
 ### No stable release yet
 
+- 2020-08-18 Added open folder hotkey for files with <kbd>M-o</kbd>
 - 2020-06-24 Stop flickering on updating the list view  
   Added +LV0x10000 to the list view to avoid flickering when the list view is updated.  
   https://autohotkey.com/board/topic/89323-listview-and-flashing-on-redrawing-or-editing/
