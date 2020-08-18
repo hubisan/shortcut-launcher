@@ -62,16 +62,16 @@ Changing selected shortcut (entry):
 
 | Key                                  | Description            |
 | :----------------------------------- | :--------------------- |
-| <kbd>Ctrl-n</kbd> or <kbd>Down</kbd> | select next entry      |
-| <kbd>Ctrl-p</kbd> or <kbd>Up</kbd>   | select previous entry  |
-| <kbd>Ctrl-f</kbd>                    | scroll down 20 entries |
-| <kbd>Ctrl-b</kbd>                    | scroll up 20 entries   |
+| <kbd>Ctrl-n</kbd> or <kbd>Down</kbd> | Select next entry      |
+| <kbd>Ctrl-p</kbd> or <kbd>Up</kbd>   | Select previous entry  |
+| <kbd>Ctrl-f</kbd>                    | Scroll down 20 entries |
+| <kbd>Ctrl-b</kbd>                    | Scroll up 20 entries   |
 
 Changing the search string:
 
 | Key                                                  | Description                      |
 | :--------------------------------------------------- | :------------------------------- |
-| <kbd>Ctrl-u</kbd>                                    | clear the input field            |
+| <kbd>Ctrl-u</kbd>                                    | Clear the input field            |
 | <kbd>Alt-a</kbd>                                     | Select all text in input field   |
 | <kbd>Ctrl-a</kbd>                                    | Move to beginning of input field |
 | <kbd>Ctrl-e</kbd>                                    | Move to end of input field       |
@@ -83,15 +83,15 @@ Open the selected shortcut:
 
 | Key                                   | Description                                    |
 | :------------------------------------ | :--------------------------------------------- |
-| <kbd>Ctrl-m</kbd> or <kbd>Enter</kbd> | open the currently selected shortcut           |
-| <kbd>Alt-o</kbd>                      | if it is a file open the its directory instead |
+| <kbd>Ctrl-m</kbd> or <kbd>Enter</kbd> | Open the currently selected shortcut           |
+| <kbd>Alt-o</kbd>                      | If it is a file open its directory instead |
 
 App:
 
 | Key                                 | Description                         |
 | :---------------------------------- | :---------------------------------- |
-| <kbd>Ctrl-r</kbd>                   | toggle showing recent files/folders |
-| <kbd>Ctrl-g</kbd> or <kbd>Esc</kbd> | minimize                            |
+| <kbd>Ctrl-r</kbd>                   | Toggle showing recent files/folders |
+| <kbd>Ctrl-g</kbd> or <kbd>Esc</kbd> | Minimize                            |
 | <kbd>Ctrl-x</kbd>                   | Exit (kill the app)                 |
 
 Remark: <kbd>Ctrl-h</kbd> seems to work by default as Backspace in the edit box.
