@@ -157,6 +157,17 @@ AddEntry:
     }
 Return
 
+AddEntryAtTop:
+    If (value.dir = "") 
+    {
+    LV_Insert(VIPRow, "", value.file, value.target, value.filename)
+    }
+    Else
+    {
+    LV_Insert(VIPRow, "", value.dir . " > " . value.file, value.target, value.filename)
+    }
+Return
+
 AddAll:
     For key, value In Shortcuts 
     {
@@ -177,10 +188,14 @@ IncrementalSearch:
         GuiControl, -Redraw, ShortcutsListView  
         ; Clear the list view.
         LV_Delete()
+        ; Priotize direct matches.
+        ; VIPShortcuts := []
+        VIPRow := 1 
         ; Loop through the array and add matching rows to the list view.
         For key, value In Shortcuts 
         {
             TextToCompare := value.dir . " > " . value.file . " " . value.target
+            VIPText := value.dir . " > " . value.file 
             If (SearchString != "") 
             {
                 ; Create regular expression from search string:
@@ -193,7 +208,16 @@ IncrementalSearch:
                 }
                 If (RegExMatch(TextToCompare, Regexp) && (ShowRecent || (SubStr(TextToCompare, 1, 6) != "Recent")))
                 {
-                    Gosub, AddEntry
+                    ; Prioritize matches in first column (dir and file) > place at top.
+                    If (RegExMatch(VIPText, Regexp) && (SubStr(TextToCompare, 1, 6) != "Recent"))
+                    {
+                        Gosub, AddEntryAtTop
+                        VIPRow++
+                    }
+                    Else
+                    {
+                        Gosub, AddEntry
+                    }
                 }
             } 
             Else If (ShowRecent || (SubStr(TextToCompare, 1, 6) != "Recent"))

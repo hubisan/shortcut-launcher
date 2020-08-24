@@ -31,7 +31,7 @@ A space in the search string is a wildcard for matching any character 0 or more 
 
 If the search string contains only lowercase letters the search is performed case insensitive. If the search string contains any uppercase letter the search is done case sensitive.
 
-It combines the text from the 1st column (folder and shortcut name) & 2nd column (target) for the search.
+It combines the text from the 1st column (folder and shortcut name) & 2nd column (target) for the search. Matches in the 1st column have a higher priority and are placed at the top of the list view.
 
 ## Text used for entries
 
