@@ -209,7 +209,8 @@ IncrementalSearch:
                 If (RegExMatch(TextToCompare, Regexp) && (ShowRecent || (SubStr(TextToCompare, 1, 6) != "Recent")))
                 {
                     ; Prioritize matches in first column (dir and file) > place at top.
-                    If (RegExMatch(VIPText, Regexp) && (SubStr(TextToCompare, 1, 6) != "Recent"))
+                    ; If (RegExMatch(VIPText, Regexp) && (SubStr(TextToCompare, 1, 6) != "Recent"))
+                    If (RegExMatch(VIPText, Regexp))
                     {
                         Gosub, AddEntryAtTop
                         VIPRow++
