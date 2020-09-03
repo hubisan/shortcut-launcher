@@ -104,17 +104,21 @@ for convert .ahk to .exe
 
 ## TODO
 
-- [ ] Change subroutines into functions and clean the script. Or rather use a
+- [ ] Style: Change subroutines into functions and clean the script. Or rather use a
       class to create a namespace. See the hydra code.
-- [ ] Add prefixes like U for url, P for path/folder, F for file or at least URL
-- [ ] Extract the profile if one is used for an url. Example:
+- [ ] Feature: Add prefixes like U for url, P for path/folder, F for file.
+- [ ] Features: Extract the profile if one is used for an url. Example:
       `%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe --profile-directory="Default" https://www.tenforums.com`
-- [ ] Add hotkey to focus edit box.
+      The profiles in Firefox are not named, only numbered or so.
+- [ ] Enhancement: Add hotkey to focus edit box.
+- [ ] Feature: Add a possibility to ignore a path in recent.
+- [ ] Feature: Multiple links folder.
 
 ## Changelog
 
 ### No stable release yet
 
+- 2020-09-03 Automatically remove non-existing targets and duplicates in recent. There are two variables at the top to turn this off if you don't want this (`DeleteDuplicatesInRecent`, `DeleteNonExistingInRecent`).  It's turned on in the compiled version.
 - 2020-08-18 Added open folder hotkey for files with <kbd>M-o</kbd>
 - 2020-06-24 Stop flickering on updating the list view  
   Added +LV0x10000 to the list view to avoid flickering when the list view is updated.  

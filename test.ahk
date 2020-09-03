@@ -4,15 +4,9 @@ SetWorkingDir, %A_ScriptDir%
 
 ^x::
 {
-    test := "C:\Users\dh\Downloads\test.xls"
-    SplitPath, test,, OutDir, OutExtension
-    if (OutExtension)
-    {
-        MsgBox, % OutExtension
-    }
-    Else
-    {
-        MsgBox, % OutDir
-    }
+
+    MsgBox, % FileExist("C:\Users\dh\.R")
+    MsgBox, % FileExist("C:\Users\dh\Documents\.Rhistory")
     Return
 }
+

@@ -30,6 +30,10 @@ SetTitleMatchMode, 3
 Shortcuts := []
 LastSearchString := ""
 ShowRecent := True
+; Option: Delete duplicates found in recent files and folders.
+DeleteDuplicatesInRecent := True
+; Option: Delete non-existing files and folders in recent.
+DeleteNonExistingInRecent := True
 
 ; Setup the GUI including edit box and listview.
 Gui, ShortcutLauncher:New, +HwndShortcutsHwnd, Shortcut Launcher
@@ -127,20 +131,36 @@ PushShortcutsFromRecent:
         FileName := A_LoopFileFullPath 
         FileGetShortcut, %FileName%, OutTarget
 
+        ; Delete if target doesn't exist if file or folder.
+        ; Rudimentary check to make sure it is a file or folder.
+        ; Anyway, for some reason only links to folder and files are in this directory.
+        ; Not sure where the others are you can seen when browsing that folder.
+        If (DeleteNonExistingInRecent) {
+            If (InStr(OutTarget, "\")) {
+                FileGetAttrib, FileExists, % OutTarget
+                If (FileExists = "") {
+                    FileDelete, %FileName%
+                    Continue
+                }
+            }
+        }
+
         ; Check if duplicates.
         IsDuplicate := False
         for index, value in RecentFiles
         {
             If (OutTarget == value) {
+                If (DeleteDuplicatesInRecent) {
+                    FileDelete, %FileName%
+                }
                 IsDuplicate := True   
             break
             }
-
         }
 
         If (!IsDuplicate) {
-            RecentFiles.Push(OutTarget)
-            SplitPath, OutTarget, Fname
+        RecentFiles.Push(OutTarget)
+        SplitPath, OutTarget, Fname
             Shortcuts.Push({dir:"Recent", file:Fname, target:OutTarget, filename:Filename})
         }
     }
