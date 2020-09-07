@@ -1,3 +1,10 @@
+*.lnk
+!default-profile.lnk
+!profiles/default/shortcuts.lnk
+
+profiles/*
+!profiles/default/
+
 # Created by https://www.gitignore.io/api/windows,microsoftoffice
 # Edit at https://www.gitignore.io/?templates=windows,microsoftoffice
 
@@ -45,7 +52,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-# Windows shortcuts
-*.lnk
+# # Windows shortcuts
 
 # End of https://www.gitignore.io/api/windows,microsoftoffice

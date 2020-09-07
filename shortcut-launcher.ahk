@@ -24,16 +24,60 @@
 #NoEnv
 #SingleInstance force
 #NoTrayIcon
+SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, 3
+
+; Get profile configuration.
+Loop, Files, %A_ScriptDir%\*.lnk
+{
+    FileName := A_LoopFileFullPath 
+    FileGetShortcut, %FileName%, ProfilePath
+    if (!Instr(FileName, "default-profile.lnk"))
+    {
+        break
+    }
+}
+
+IniRead, ProfileName, % ProfilePath . "/config.ini", Config, Name
+IniRead, ShowRecent, % ProfilePath . "/config.ini", Config, ShowRecent
+IniRead, DeleteDuplicatesInRecent, % ProfilePath . "/config.ini", Config, DeleteDuplicatesInRecent
+IniRead, DeleteNonExistingInRecent, % ProfilePath . "/config.ini", Config, DeleteNonExistingInRecent
+
+If (ShowRecent == "ERROR" || ShowRecent == "True")
+{
+    ShowRecent := True
+}
+Else
+{
+    ShowRecent := False
+}
+
+If (DeleteDuplicatesInRecent == "ERROR" || DeleteDuplicatesInRecent == "True")
+{
+    DeleteDuplicatesInRecent := True
+}
+Else
+{
+    DeleteDuplicatesInRecent := False
+}
+
+If (DeleteNonExistingInRecent == "ERROR" || DeleteNonExistingInRecent == "True")
+{
+    DeleteNonExistingInRecent := True
+}
+Else
+{
+    DeleteNonExistingInRecent := False
+}
 
 ; Global variables
 Shortcuts := []
 LastSearchString := ""
-ShowRecent := True
+; ShowRecent := True
 ; Option: Delete duplicates found in recent files and folders.
-DeleteDuplicatesInRecent := True
+; DeleteDuplicatesInRecent := True
 ; Option: Delete non-existing files and folders in recent.
-DeleteNonExistingInRecent := True
+; DeleteNonExistingInRecent := True
 
 ; Setup the GUI including edit box and listview.
 Gui, ShortcutLauncher:New, +HwndShortcutsHwnd, Shortcut Launcher
@@ -71,55 +115,66 @@ Gui, ShortcutLauncher:Show
 Return
 
 PushShortcutsFromFolder:
-    ; Get the folder from the shortcut on your desktop
-    ShortcutFolder := A_Desktop . "\shortcut-launcher.lnk"
-    FileGetShortcut, %ShortcutFolder%, Folder
-    FilePattern := Folder . "\*"
-
-    Loop, Files, %FilePattern%, R 
+    ; Get shortcuts from all links in the profile path.
+    Loop, Files, %ProfilePath%\*.lnk
     {
-        If A_LoopFileExt in lnk,url
-        {
-            ; Must save it to a writable variable for use below. Else it breaks the Loop.
-            FileName := A_LoopFileFullPath 
-            SplitPath, FileName, Name, Dir, FileExt, FilenameNoExtension 
-            If (Dir = Folder)
-            {
-                ; If at top dir use empty string as text.
-                Dirname := ""
-            }
-            Else
-            {
-                ; Replace path separator.
-                Dirname := StrReplace(Dir, Folder . "\", "")
-                Dirname := StrReplace(Dirname, "\", " > ")
-            }
+        ; Get the folder from the shortcut on your desktop
+        FileName := A_LoopFileFullPath 
+        FileGetShortcut, %FileName%, Folder
 
-            FileGetShortcut, %FileName%, OutTarget, OutDir, OutArgs
-            If (FileExt = "url")
+        FileGetAttrib, FolderExists, % Folder
+        ; Skip if folder doesn't exist.
+        If (FolderExists = "") {
+            Continue
+        }
+
+        FilePattern := Folder . "\*"
+
+        Loop, Files, %FilePattern%, R 
+        {
+            If A_LoopFileExt in lnk,url
             {
-                ; If it is an url it actually is a text file with the URL on a line
-                ; on its own starting with URL=. Read the file and extract the url.
-                Loop, read, %Filename%
+                ; Must save it to a writable variable for use below. Else it breaks the Loop.
+                FileName := A_LoopFileFullPath 
+                SplitPath, FileName, Name, Dir, FileExt, FilenameNoExtension 
+                If (Dir = Folder)
                 {
-                    If (SubStr(A_LoopReadLine, 1, 4) = "URL=")
+                    ; If at top dir use empty string as text.
+                    Dirname := ""
+                }
+                Else
+                {
+                    ; Replace path separator.
+                    Dirname := StrReplace(Dir, Folder . "\", "")
+                    Dirname := StrReplace(Dirname, "\", " > ")
+                }
+
+                FileGetShortcut, %FileName%, OutTarget, OutDir, OutArgs
+                If (FileExt = "url")
+                {
+                    ; If it is an url it actually is a text file with the URL on a line
+                    ; on its own starting with URL=. Read the file and extract the url.
+                    Loop, read, %Filename%
                     {
-                        OutTarget := SubStr(A_LoopReadLine, 5)
-                        ; Only Edge can make direct links unlike other browsers, damn you MS.
-                        OutTarget := StrReplace(OutTarget, "microsoft-edge:", "(edge) ")
-                        break
+                        If (SubStr(A_LoopReadLine, 1, 4) = "URL=")
+                        {
+                            OutTarget := SubStr(A_LoopReadLine, 5)
+                            ; Only Edge can make direct links unlike other browsers, damn you MS.
+                            OutTarget := StrReplace(OutTarget, "microsoft-edge:", "(edge) ")
+                            break
+                        }
                     }
                 }
+        
+                ; For shortcuts using 
+                If (RegExMatch(OutTarget . OutArgs, "(chrome|firefox|iexplore)\.exe.*(https.?://.*)$", Match) <> 0)
+                {
+                    RegExMatch(OutArgs, "") 
+                    OutTarget := "(" . Match1 . ") " . Match2
+                }
+        
+                Shortcuts.Push({dir:Dirname, file:FilenameNoExtension, target:OutTarget, filename:Filename})
             }
-    
-            ; For shortcuts using 
-            If (RegExMatch(OutTarget . OutArgs, "(chrome|firefox|iexplore)\.exe.*(https.?://.*)$", Match) <> 0)
-            {
-                RegExMatch(OutArgs, "") 
-                OutTarget := "(" . Match1 . ") " . Match2
-            }
-    
-            Shortcuts.Push({dir:Dirname, file:FilenameNoExtension, target:OutTarget, filename:Filename})
         }
     }
 Return

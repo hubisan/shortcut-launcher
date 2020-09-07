@@ -4,9 +4,13 @@ SetWorkingDir, %A_ScriptDir%
 
 ^x::
 {
-
-    MsgBox, % FileExist("C:\Users\dh\.R")
-    MsgBox, % FileExist("C:\Users\dh\Documents\.Rhistory")
-    Return
+    ; Get profile configuration.
+    Loop, Files, %A_ScriptDir%\*.lnk
+    {
+        FileName := A_LoopFileFullPath 
+        FileGetShortcut, %FileName%, ProfilePath
+        break
+    }
 }
+
 
