@@ -73,6 +73,7 @@ Else
 ; Global variables
 Shortcuts := []
 LastSearchString := ""
+
 ; ShowRecent := True
 ; Option: Delete duplicates found in recent files and folders.
 ; DeleteDuplicatesInRecent := True
@@ -333,6 +334,43 @@ Scroll(num)
     }
 }
 
+myGetWindowIDs()
+{
+    winIDs := []
+    WinGet, winID, list
+    Loop %winID%
+    {
+        id := winID%A_Index%
+        winIDs.Push(id)
+    }
+    return winIDs
+}
+
+myGetNewWindowID(oldWinIDs, currentWinIDs)
+{
+    newID := 0
+    For i, winID1 in currentWinIDs
+    {
+        For j, winID2 in oldWinIDs
+        {
+            If (winID1 = winID2)
+            {
+                newID := 0
+                Break
+            }
+            Else
+            {
+                newID := 1
+            }
+        }
+        if newID
+        {
+            return currentWinIDs[i]
+        }
+    }
+    return 0
+}
+
 ; Global binding to show the GUI.
 ; ^!+l::
 ; {
@@ -417,6 +455,7 @@ Enter::
     Gui, ShortcutLauncher:Default
     LV_GetText(ShortcutTarget, LV_GetNext(), 3)
     Run %ShortcutTarget%,, UseErrorLevel
+
     if ErrorLevel
     {
         MsgBox Could not open "%FileDir%\%FileName%".
@@ -427,6 +466,127 @@ Enter::
     }
     Return
 }
+
+^q::
+{
+    ; This is a test to run a shortcut and then place the window on the left.
+    ; To detect the new window I am using the method I developped by checking
+    ; all windows until there is a new one. This seems to be the only realiable
+    ; way to do this. The only problem is that this will not work if the app is
+    ; already open and is reused.
+
+    ; Those two scripts should help for snapping the windows.
+    ; https://www.autohotkey.com/boards/viewtopic.php?t=25966
+    ; https://gist.github.com/Cerothen/b52724498da640873fa27052770ac10d
+
+    Gui, ShortcutLauncher:Default
+    LV_GetText(ShortcutTarget, LV_GetNext(), 3)
+
+    newWinID := ""
+    oldWinIDs := myGetWindowIDs()
+    currentWinIDs := []
+    WinGet, activeWinID, ID, A
+
+    Run, %ShortcutTarget%,, UseErrorLevel
+
+    if ErrorLevel
+    {
+        MsgBox Could not open "%FileDir%\%FileName%".
+        Return
+    }
+    else
+    {
+        ; Gui, ShortcutLauncher:Show, Minimize
+    }
+
+    Sleep, 100
+
+    StartTime := A_TickCount
+    ElapsedTime := (A_TickCount - StartTime)
+    While (ElapsedTime < 20000)
+    {
+        WinGet, activeWinID_neu, ID, A
+        if (activeWinID_neu && activeWinID != activeWinID_neu)
+        {
+            newWinID := activeWinID_neu
+            break
+        }
+
+        ; currentWinIDs := myGetWindowIDs()
+        ; newWinID := myGetNewWindowID(oldWinIDs, currentWinIDs)
+        ; if newWinID
+        ; {
+        ;     WinGetTitle, activeTitle, A
+        ;     break
+        ; }
+
+        ElapsedTime := (A_TickCount - StartTime)
+    }
+
+    ; Get the sizes.
+    SysGet, MonitorWorkArea, MonitorWorkArea, 1
+    height := (MonitorWorkAreaBottom - MonitorWorkAreaTop)
+
+    winPlaceHorizontal := "left" 
+    if (winPlaceHorizontal == "left") 
+    {
+        posX  := MonitorWorkAreaLeft
+        width := (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
+    } 
+    else if (winPlaceHorizontal == "right") 
+    {
+        posX  := MonitorWorkAreaLeft + (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
+        width := (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
+    } 
+    else 
+    {
+        posX  := MonitorWorkAreaLeft
+        width := MonitorWorkAreaRight - MonitorWorkAreaLeft
+    }
+
+    winPlaceVertical := "full"
+    If (winPlaceVertical == "bottom") {
+            posY := MonitorWorkAreaBottom - height
+    } 
+    Else If (winPlaceVertical == "middle") 
+    {
+            posY := MonitorWorkAreaTop + height
+    } 
+    Else 
+    {
+            posY := MonitorWorkAreaTop
+    }
+
+	; Rounding
+	posX := floor(posX)
+	posY := floor(posY)
+	width := floor(width)
+	height := floor(height)
+
+    ; Borders (Windows 10)
+    SysGet, BorderX, 32
+    SysGet, BorderY, 33
+    if (BorderX) {
+        posX := posX - BorderX
+        width := width + (BorderX * 2)
+    }
+    if (BorderY) {
+        height := height + BorderY
+    }
+
+    if (newWinID)
+    {
+        ; WinGet, OutputVar, PID, ahk_id %newWinID%
+        WinSet, Trans, 0, ahk_id %newWinID%
+        WinMove, ahk_id %newWinID%,,%posX%,%posY%,%width%,%height%
+        WinMaximize, ahk_id %newWinID%i
+        SendInput #{Right}
+        WinSet, Trans, 255, ahk_id %newWinID%
+    }
+    Gui, ShortcutLauncher:Show, Minimize
+    Return
+}
+
 !o::
 {
     ; TODO use the hydra for more actions.
