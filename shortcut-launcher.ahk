@@ -20,7 +20,7 @@
 ; - 2020-06-24: Added +LV0x10000 to the list view to avoid flickering
 ;   https://autohotkey.com/board/topic/89323-listview-and-flashing-on-redrawing-or-editing/
 
-#Warn ; Comment when finished
+; #Warn ; Comment when finished
 #NoEnv
 #SingleInstance force
 #NoTrayIcon
@@ -51,6 +51,7 @@ Else
 {
     ShowRecent := False
 }
+ShowRecent := False
 
 If (DeleteDuplicatesInRecent == "ERROR" || DeleteDuplicatesInRecent == "True")
 {
@@ -99,7 +100,9 @@ GuiControl, -Redraw, ShortcutsListView
 
 ; Push shortcuts to array.
 GoSub, PushShortcutsFromFolder
-GoSub, PushShortcutsFromRecent
+if ShowRecent {
+    GoSub, PushShortcutsFromRecent
+}
 
 ; Add shortcuts to listview.
 GoSub, AddAll
@@ -542,53 +545,62 @@ Enter::
 
     ; Get the sizes.
     SysGet, MonitorWorkArea, MonitorWorkArea, 1
-    height := (MonitorWorkAreaBottom - MonitorWorkAreaTop)
+    ; height := (MonitorWorkAreaBottom - MonitorWorkAreaTop)
 
-    winPlaceHorizontal := "left" 
-    if (winPlaceHorizontal == "left") 
-    {
-        posX  := MonitorWorkAreaLeft
-        width := (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
-    } 
-    else if (winPlaceHorizontal == "right") 
-    {
-        posX  := MonitorWorkAreaLeft + (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
-        width := (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
-    } 
-    else 
-    {
-        posX  := MonitorWorkAreaLeft
-        width := MonitorWorkAreaRight - MonitorWorkAreaLeft
-    }
+    ; winPlaceHorizontal := "left" 
+    ; if (winPlaceHorizontal == "left") 
+    ; {
+    ;     posX  := MonitorWorkAreaLeft
+    ;     width := (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
+    ; } 
+    ; else if (winPlaceHorizontal == "right") 
+    ; {
+    ;     posX  := MonitorWorkAreaLeft + (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
+    ;     width := (MonitorWorkAreaRight - MonitorWorkAreaLeft)/2
+    ; } 
+    ; else 
+    ; {
+    ;     posX  := MonitorWorkAreaLeft
+    ;     width := MonitorWorkAreaRight - MonitorWorkAreaLeft
+    ; }
 
-    winPlaceVertical := "full"
-    If (winPlaceVertical == "bottom") {
-            posY := MonitorWorkAreaBottom - height
-    } 
-    Else If (winPlaceVertical == "middle") 
-    {
-            posY := MonitorWorkAreaTop + height
-    } 
-    Else 
-    {
-            posY := MonitorWorkAreaTop
-    }
+    ; winPlaceVertical := "full"
+    ; If (winPlaceVertical == "bottom") {
+    ;         posY := MonitorWorkAreaBottom - height
+    ; } 
+    ; Else If (winPlaceVertical == "middle") 
+    ; {
+    ;         posY := MonitorWorkAreaTop + height
+    ; } 
+    ; Else 
+    ; {
+    ;         posY := MonitorWorkAreaTop
+    ; }
 
 	; Rounding
-	posX := floor(posX)
-	posY := floor(posY)
-	width := floor(width)
-	height := floor(height)
+	; posX := floor(posX)
+	; posY := floor(posY)
+	; width := floor(width)
+	; height := floor(height)
+
+    ; Borders (Windows 10)
+    ; SysGet, BorderX, 32
+    ; SysGet, BorderY, 33
+    ; if (BorderX) {
+    ;     posX := posX - BorderX
+    ;     width := width + (BorderX * 2)
+    ; }
+    ; if (BorderY) {
+    ;     height := height + BorderY
+    ; }
+
+    posX  := MonitorWorkAreaLeft
+    posY := MonitorWorkAreaTop
 
     ; Borders (Windows 10)
     SysGet, BorderX, 32
-    SysGet, BorderY, 33
     if (BorderX) {
         posX := posX - BorderX
-        width := width + (BorderX * 2)
-    }
-    if (BorderY) {
-        height := height + BorderY
     }
 
     if (newWinID)
@@ -607,7 +619,12 @@ Enter::
             } else {
                 ; This probably works in any case, no check needed.
                 WinSet, Trans, 0, ahk_id %new_id%
+                ; Move to monitor
+                WinMove, ahk_id %new_id%, , %posX%, %posY%
                 WinMaximize, ahk_id %new_id%
+                ; Other snapping methods with area width and so on give ugly borders.
+                ; And really don't need 1/2 height, only 1/2 width.
+                ; This actually seem supported now: maximize, #{down}, #{right}, #{down} or #{up}
                 SendInput #{Right}
                 WinSet, Trans, 255, ahk_id %new_id%
                 break
@@ -615,26 +632,36 @@ Enter::
             ; Get the id with the pid, this is needed for mostly office
             ; programms as for some reason the id when the window is shown
             ; (loading image) is replace by another once the programm or file
-            ; is loaded.
-            ; Needs a trick to really be able to move a window.
-            ; So setting height and with to 555 and then loop until both match.
-            ; To not make it fail if for some reason a window already is 555 x
-            ; 555 set it to 600 after and check again.
+            ; is loaded. The only way to detect that loading screen is the
+            ; following:
+            ; Try to change the width of the window, this will not work for the
+            ; loading image. Can't use the position as this will move the excel
+            ; loading image and falsely think it was successful. But the width
+            ; can't be changed. So as long as I can't change it I have to wait
+            ; and get the ID with the PID.
+            ; If the window hits the right window border increasing the width
+            ; is not successful. Therefore the window is offset in addition.
+
+            ; Try to hide it.
             WinSet, Trans, 0, ahk_id %new_id%
-            ; WinMove, ahk_id %new_id%,,%posX%,%posY%,555,555
-            ; WinGetPos,x,y,win_width,win_height,ahk_id %new_id%
-            WinMinimize, ahk_id %new_id%
-            ; if (win_height = 555 && win_width = 555) {
-            WinGet, is_minimized, MinMax, ahk_id %new_id%
-            if (is_minimized = -1) {
-                ; WinMove, ahk_id %new_id%,,%posX%,%posY%,555,600
-                ; WinGetPos,x,y,win_width,win_height,ahk_id %new_id%
-                ; if (win_height = 600) {
-                    WinMaximize, ahk_id %new_id%
-                    SendInput #{Right}
-                    WinSet, Trans, 255, ahk_id %new_id%
-                    break
-                ; }
+            ; Store width.
+            WinGetPos, current_x, , current_width, , ahk_id %new_id%
+            ; Set position for testing if windows moved.
+            WinMove, ahk_id %new_id%, , % current_x + 1, , % current_width + 1
+            ; Get the new position.
+            WinGetPos, x_new, , width_new, , ahk_id %new_id%
+            ; Check if window got moved.
+            if (width_new = current_width + 1) {
+                ; Move to monitor to top left and restore original width.
+                WinMove, ahk_id %new_id%, , % posX, % posY, % current_width
+                ; Maximize to be able to snap it.
+                WinMaximize, ahk_id %new_id%
+                SendInput #{Right}
+                WinSet, Trans, 255, ahk_id %new_id%
+                break
+            } else {
+                ; reset the position
+                WinMove, ahk_id %new_id%, , % current_x
             }
             ; WinGetTitle,test,ahk_id %new_id% 
             ; OutputDebug, % test
