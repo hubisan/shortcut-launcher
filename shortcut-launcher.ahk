@@ -482,6 +482,8 @@ Enter::
     Gui, ShortcutLauncher:Default
     LV_GetText(ShortcutTarget, LV_GetNext(), 3)
 
+    ; Needs to be a string and not 0, else the id is converted into an
+    ; number when using WinGet.
     newWinID := ""
     oldWinIDs := myGetWindowIDs()
     currentWinIDs := []
@@ -503,12 +505,27 @@ Enter::
 
     StartTime := A_TickCount
     ElapsedTime := (A_TickCount - StartTime)
+    use_id := false
     While (ElapsedTime < 20000)
     {
         WinGet, activeWinID_neu, ID, A
         if (activeWinID_neu && activeWinID != activeWinID_neu)
         {
             newWinID := activeWinID_neu
+            ; Looks like the PID is need as for instance if starting Excel with a
+            ; shortcut there is another window at the start which gets replaced by
+            ; another after some ms. Well, wtf, looks like for file explorer
+            ; the ID is needed and PID doesn't work.
+            WinGet, p_id, PID, ahk_id %newWinID%
+            WinGet, id_from_p_id, ID, ahk_pid %p_id%
+            ; Looks like for file explorer the ID is needed as the process
+            ; itself is a merged one for all file explorers and of no use.
+            ; Or in general it is probably advisable to use the first id from
+            ; WinGet for the new active window if the id returned from the id
+            ; is not the same.
+            if (newWinID != id_from_p_id) {
+                use_id := true
+            }
             break
         }
 
@@ -519,7 +536,7 @@ Enter::
         ;     WinGetTitle, activeTitle, A
         ;     break
         ; }
-
+        Sleep, 100
         ElapsedTime := (A_TickCount - StartTime)
     }
 
@@ -576,12 +593,55 @@ Enter::
 
     if (newWinID)
     {
-        ; WinGet, OutputVar, PID, ahk_id %newWinID%
-        WinSet, Trans, 0, ahk_id %newWinID%
-        WinMove, ahk_id %newWinID%,,%posX%,%posY%,%width%,%height%
-        WinMaximize, ahk_id %newWinID%i
-        SendInput #{Right}
-        WinSet, Trans, 255, ahk_id %newWinID%
+        ; WinMove, ahk_id %newWinID%,,%posX%,%posY%,%width%,%height%
+        ; Make the window only 10 wide to be able to check for a change after.
+        new_id := newWinID
+        win_height := 0
+        win_width := 0
+        StartTime := A_TickCount
+        ElapsedTime := (A_TickCount - StartTime)
+        while (ElapsedTime < 20000) {
+            ; Needs to be in the loop maybe.
+            if !use_id {
+                WinGet, new_id, ID, ahk_pid %p_id%
+            } else {
+                ; This probably works in any case, no check needed.
+                WinSet, Trans, 0, ahk_id %new_id%
+                WinMaximize, ahk_id %new_id%
+                SendInput #{Right}
+                WinSet, Trans, 255, ahk_id %new_id%
+                break
+            }
+            ; Get the id with the pid, this is needed for mostly office
+            ; programms as for some reason the id when the window is shown
+            ; (loading image) is replace by another once the programm or file
+            ; is loaded.
+            ; Needs a trick to really be able to move a window.
+            ; So setting height and with to 555 and then loop until both match.
+            ; To not make it fail if for some reason a window already is 555 x
+            ; 555 set it to 600 after and check again.
+            WinSet, Trans, 0, ahk_id %new_id%
+            ; WinMove, ahk_id %new_id%,,%posX%,%posY%,555,555
+            ; WinGetPos,x,y,win_width,win_height,ahk_id %new_id%
+            WinMinimize, ahk_id %new_id%
+            ; if (win_height = 555 && win_width = 555) {
+            WinGet, is_minimized, MinMax, ahk_id %new_id%
+            if (is_minimized = -1) {
+                ; WinMove, ahk_id %new_id%,,%posX%,%posY%,555,600
+                ; WinGetPos,x,y,win_width,win_height,ahk_id %new_id%
+                ; if (win_height = 600) {
+                    WinMaximize, ahk_id %new_id%
+                    SendInput #{Right}
+                    WinSet, Trans, 255, ahk_id %new_id%
+                    break
+                ; }
+            }
+            ; WinGetTitle,test,ahk_id %new_id% 
+            ; OutputDebug, % test
+            ; OutputDebug, % "first_ID: " . newWinID . " ID < PID 1: " . id_from_p_id . " ID < PID 2: " . new_id . " PID: " . p_id .  " height: " . win_height . " width: " . win_width
+            Sleep 100
+            ElapsedTime := (A_TickCount - StartTime)
+        }
     }
     Gui, ShortcutLauncher:Show, Minimize
     Return
