@@ -21,11 +21,27 @@
 ;   https://autohotkey.com/board/topic/89323-listview-and-flashing-on-redrawing-or-editing/
 
 ; #Warn ; Comment when finished
-#NoEnv
 #SingleInstance force
 #NoTrayIcon
+
+; How to optimize the speed of a script as much as possible.
+; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=6413
+#NoEnv
+#MaxHotkeysPerInterval 99000000
+#HotkeyInterval 99000000
+#KeyHistory 0
+ListLines Off
+Process, Priority, , A
+SetBatchLines, -1
+SetKeyDelay, -1, -1
+SetMouseDelay, -1
+SetDefaultMouseSpeed, 0
+SetWinDelay, -1
+SetControlDelay, -1
+SendMode Input
+
 SetWorkingDir, %A_ScriptDir%
-SetTitleMatchMode, 3
+; SetTitleMatchMode, 3
 
 ; Get profile configuration.
 Loop, Files, %A_ScriptDir%\*.lnk
@@ -92,6 +108,7 @@ Gui, ShortcutLauncher:Margin, 15, 15
 ; Add an edit box for the insert the search string.
 Gui, ShortcutLauncher:Add, Edit, w1200 h30 +0x200 -VScroll -wrap -E0x200 vSearchString gIncrementalSearch, 
 ; Create the ListView.
+; 0x2000 = no scroll bars
 Gui, ShortcutLauncher:Add, ListView, +LV0x10000 r35 w1200 -Multi -Hdr -E0x200 Background091D33 cB6C9DE vShortcutsListView, Name|Target|Filename
 
 ; Improve performance by disabling redrawing during load.
