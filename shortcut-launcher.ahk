@@ -51,7 +51,6 @@ Else
 {
     ShowRecent := False
 }
-ShowRecent := False
 
 If (DeleteDuplicatesInRecent == "ERROR" || DeleteDuplicatesInRecent == "True")
 {
