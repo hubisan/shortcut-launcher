@@ -1,4 +1,4 @@
-; Copyright 2020, Daniel Hubmann
+﻿; Copyright 2020, Daniel Hubmann
 
 ; Author: Daniel Hubmann <hubisan@gmail.com>
 ; URL: https://github.com/hubisan/shortcut-launcher

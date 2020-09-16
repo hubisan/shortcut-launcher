@@ -1,11 +1,11 @@
-#SingleInstance, Force
+﻿#SingleInstance, Force
 SendMode Input
 SetWorkingDir, %A_ScriptDir%
 
 
 test()
 {
-    MsgBox, % "test"
+    MsgBox, % "Gedäé"
     return 1
 }
 
