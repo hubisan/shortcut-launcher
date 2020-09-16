@@ -196,6 +196,10 @@ PushShortcutsFromFolder:
                 Shortcuts.Push({dir:Dirname, file:FilenameNoExtension, target:OutTarget, filename:Filename})
             }
         }
+        ; if Shortcuts
+        ; {
+        ;     sort_2d_array(Shortcuts, "dir")
+        ; }
     }
 Return
 
@@ -466,6 +470,12 @@ Down::
 ^f::
 {
     Scroll(20)
+    Return
+}
+^i::
+{
+    Gui, ShortcutLauncher:Default
+    GuiControl, Focus, SearchString 
     Return
 }
 ^m::

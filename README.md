@@ -56,7 +56,7 @@ You can configure the follow options in `config.ini` inside the profile:
 
 ### Profile Link to Shortcuts Folders
 
-Add one or multiple shortcuts in the profile pointing to a folder that 
+Add one or multiple shortcuts in the profile pointing to a folder that
 holds shortcuts. The shortcut in the default profile points to
 `%userprofile%\desktop\shortcuts` (folder called shortcuts on the current
 user desktop).
@@ -76,7 +76,7 @@ This is the default profile.
         └── shortcuts.lnk
 ```
 
-- `default-profile.lnk` is a shortcut with target `%userprofile%\desktop\shortcut-launcher\profiles\default`. 
+- `default-profile.lnk` is a shortcut with target `%userprofile%\desktop\shortcut-launcher\profiles\default`.
 - `config.ini`
   ```ini
   [Config]
@@ -161,6 +161,7 @@ App:
 
 | Key                                 | Description                         |
 | :---------------------------------- | :---------------------------------- |
+| <kbd>Ctrl-i</kbd>                   | Focus input field                   |
 | <kbd>Ctrl-r</kbd>                   | Toggle showing recent files/folders |
 | <kbd>Ctrl-g</kbd> or <kbd>Esc</kbd> | Minimize                            |
 | <kbd>Ctrl-x</kbd>                   | Exit (kill the app)                 |
@@ -175,22 +176,29 @@ for convert .ahk to .exe
 
 ## TODO
 
-- [ ] Style: Change subroutines into functions and clean the script. Or rather use a
-      class to create a namespace. See the hydra code.
+- [ ] Feature: Sort the shortcuts (exclude the recent files as they should be show in order).  
+      This is needed now when using multiple shortcut folders.
+- [ ] Feature: Use a hydra for the action bound to <kbd>Ctrl-o</kbd>.
+- [ ] Feature: Snap windows to half screen or full screen after running a shortcut.  
+      Experimental implementation bound to <kbd>Ctrl-q</kbd>.
+- [ ] Style: Change subroutines into functions and clean the script. Or
+      rather use a class to create a namespace. See the hydra code.
 - [ ] Feature: Add prefixes like U for url, P for path/folder, F for file.
-- [ ] Features: Extract the profile if one is used for an url. Example:
+- [ ] Feature: Extract the profile if one is used for an url. Example:
       `%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe --profile-directory="Default" https://www.tenforums.com`
       The profiles in Firefox are not named, only numbered or so.
-- [ ] Enhancement: Add hotkey to focus edit box.
 - [ ] Feature: Add a possibility to ignore a path in recent.
 - [ ] Feature: Add Workspace feature to links. In the target description (is
       usually not used) one can add a JSON or so to configure how the shorcut is
-      opened. Fullscreen ...
+      opened. Fullscreen ...  
+      This should be bound to a separate key. The profile name is now no
+      problem anymore as this is already implemented.
 
 ## Changelog
 
 ### No stable release yet
 
+- 2020-09-16 Added focus input (edit box) feature (Ctrl-i)
 - 2020-09-07 Added feature to have multiple shortcut folders.
 - 2020-09-07 Added mechanism to have profiles.
 - 2020-09-03 Automatically remove non-existing targets and duplicates in recent. There are two variables at the top to turn this off if you don't want this (`DeleteDuplicatesInRecent`, `DeleteNonExistingInRecent`). It's turned on in the compiled version.
